@@ -4,55 +4,14 @@ import pencilLogo from '../images/pancil.svg'
 import plusLogo from '../images/plus.svg'
 import Card from './Card.js';
 import {api} from '../utils/api.js'
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 
 
 
 function Main(props) {
-
-  // переменные состояния для сохранения информации о пользователе
-  const [userName, setUserName] = React.useState()
-  const [userDescription, setUserDescription] = React.useState()
-  const [userAvatar, setUserAvatar] = React.useState()
-
-  // переменные состояния для карточек
-
-  const [cards, setCards] = React.useState([])
-
-  // загрузка данных пользователя
-
-  React.useEffect(() => {
-    api.getUserInfo()
-    .then((profile) => {
-      setUserName(profile.name)
-      setUserDescription(profile.about)
-      setUserAvatar(profile.avatar)
-    })
-      .catch(err => {
-        console.log(err)
-      })
-  }, [])
-
-  
-  // загрузка первоначльной коллекции карточек, один раз при сборке
-
-  React.useEffect(() => {
-    api.getInitialCards()
-    .then(data => {
-      setCards(
-        data.map((item) => ({
-          id: item._id,
-          title: item.name,
-          alt: item.name,
-          url: item.link,
-          like: item.likes.length
-        }))
-      );
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }, [])
+  // подпишем компонент на контекст
+  const currentUser = React.useContext(CurrentUserContext);
 
 
     return (
@@ -60,25 +19,27 @@ function Main(props) {
 
         <section className="profile">
             <button className="profile__avatar-button" onClick={props.onEditAvatar}>
-              <img src={userAvatar} className="profile__avatar" alt="Аватар пользователя"/>
+              <img src={currentUser.avatar} className="profile__avatar" alt="Аватар пользователя"/>
             </button>
                   
           <div className="profile__info">
-            <h1 className="profile__title">{userName}</h1>
+            <h1 className="profile__title">{currentUser.name}</h1>
               <button className="profile__button" type='button' onClick={props.onEditProfile}>
                 <img src={pencilLogo} className="profile__image" alt="Карандаш"/>
               </button>          
-            <p className="profile__subtitle">{userDescription}</p>
+            <p className="profile__subtitle">{currentUser.about}</p>
           </div>
           <button className="profile__addbutton" type='button' onClick={props.onAddPlace}>
                 <img src={plusLogo} className="profile__image" alt="Плюс"/>
           </button>  
         </section>
         <section className="elements">
-            {cards.map((item) => {
-              return ( <Card key={item.id}
-                             card={item}
-                             onCardClick={props.onCardClick}>
+            {props.cards.map((cards) => {
+              return ( <Card key={cards._id}
+                             card={cards}
+                             onCardClick={props.onCardClick}
+                             onCardLike={props.onCardLike}
+                             onCardDelete={props.onCardDelete}>
                       </Card>)
             })}
         </section>
