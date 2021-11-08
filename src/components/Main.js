@@ -1,9 +1,7 @@
 import React from 'react';
-import avatarUser from '../images/jak_kusto.jpg'
 import pencilLogo from '../images/pancil.svg'
 import plusLogo from '../images/plus.svg'
 import Card from './Card.js';
-import {api} from '../utils/api.js'
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 

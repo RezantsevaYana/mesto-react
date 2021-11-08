@@ -1,5 +1,4 @@
 import React from 'react';
-import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import PopupWithForm from './PopupWithForm.js';
 
 function EditAvatarPopup(props) {
@@ -16,11 +15,16 @@ function EditAvatarPopup(props) {
 
 
     return(
-        <PopupWithForm name='-avatar' title='Обновить аватар' isOpen={props.isOpen} onClose={props.onClose} onSubmit={handleSubmit} buttonText='Сохранить' >
-          <input id='link-input' type="url" className="popup__input popup__input_avatar_link" name="link"
+        <PopupWithForm name='-avatar' title='Обновить аватар'
+            isOpen={props.isOpen}
+            onClose={props.onClose} 
+            onSubmit={handleSubmit} 
+            isLoading={props.isLoading}
+            buttonText='Сохранить' >
+            <input id='link-input' type="url" className="popup__input popup__input_avatar_link" name="link"
                       placeholder="Ссылка на картинку" ref={editAvatar}/>
-          <span className='error link-input-error'></span>
-          </PopupWithForm>
+            <span className='error link-input-error'></span>
+        </PopupWithForm>
     )
 }
 

@@ -2,7 +2,6 @@ import React from 'react';
 import Header from './Header.js';
 import Main from './Main.js'
 import Footer from './Footer.js';
-import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js'
 import { api } from '../utils/api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js'
@@ -33,6 +32,10 @@ function App() {
 
   const [cards, setCards] = React.useState([])
 
+  // переменная состояния для идентификатора загрузки
+
+  const [isLoading, setIsLoading] = React.useState(false)
+
 
   // загрузка первоначальной коллекции карточек и информации о пользователе
   React.useEffect(()=> {
@@ -46,9 +49,10 @@ function App() {
     })
   }, [])
 
-  
+  // попап добавления карточки
 
   function handleAddPlaceSubmit(newCard) {
+    setIsLoading(true)
     api.addCard(newCard)
       .then((newCard) => {
         setCards([newCard, ...cards]);
@@ -56,7 +60,8 @@ function App() {
       .catch(err => {
         console.log(err)
       })
-      .finally(() => closeAllPopups())
+      .finally(() => { closeAllPopups();
+                      setIsLoading(false) })
   }
 
 
@@ -94,6 +99,7 @@ function App() {
 
 // обработчик удаления карточки
   function handleCardDelete() {
+    setIsLoading(true)
     api.deleteCards(deleteCard._id)
       .then(() => {
         const newCards = cards.filter((c) => c._id !== deleteCard._id);
@@ -102,7 +108,8 @@ function App() {
       .catch(err => {
         console.log(err)
       })
-      .finally(() => closeAllPopups())
+      .finally(() => {closeAllPopups()
+                      setIsLoading(false)})
   }
 
  
@@ -145,17 +152,20 @@ function App() {
   // обработчик изменения информации о пользователе
 
   function handleUpdateUser(user) {
+    setIsLoading(true)
     api.editUserInfo(user)
       .then((user) => setCurrentUser(user))
       .catch(err => {
         console.log(err)
       })
-      .finally(() => closeAllPopups());
+      .finally(() => {closeAllPopups()
+                    setIsLoading(false)});
   }
 
   // обработчик изменения аватара пользователя
 
   function handleUpdateAvatar(item) {
+    setIsLoading(true)
     api.editAvatar(item)
       .then((res) => {
         setCurrentUser(res)
@@ -163,7 +173,8 @@ function App() {
       .catch(err => {
         console.log(err)
       })
-      .finally(() => closeAllPopups())
+      .finally(() => {closeAllPopups();
+                    setIsLoading(false)})
   }
 
  
@@ -184,13 +195,31 @@ function App() {
         />
         <Footer />
 
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}></EditProfilePopup>
+        <EditProfilePopup isOpen={isEditProfilePopupOpen}
+                          onClose={closeAllPopups}
+                          onUpdateUser={handleUpdateUser}
+                          isLoading={isLoading} >
+        </EditProfilePopup>
 
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} addNewCard={handleAddPlaceSubmit} onAddPlace={handleAddPlaceSubmit}></AddPlacePopup>
+        <AddPlacePopup isOpen={isAddPlacePopupOpen}
+                      onClose={closeAllPopups}
+                      addNewCard={handleAddPlaceSubmit}
+                      onAddPlace={handleAddPlaceSubmit} 
+                      isLoading={isLoading}>
+        </AddPlacePopup>
       
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}></EditAvatarPopup>
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen}
+                        onClose={closeAllPopups}
+                        onUpdateAvatar={handleUpdateAvatar}
+                        isLoading={isLoading}>
+        </EditAvatarPopup>
       
-        <DeleteCard isOpen={isDeleteCard} onClose={closeAllPopups} onDeleteCard={handleCardDelete} card={deleteCard}></DeleteCard>
+        <DeleteCard isOpen={isDeleteCard}
+                    onClose={closeAllPopups}
+                    onDeleteCard={handleCardDelete} 
+                    card={deleteCard}
+                    isLoading={isLoading}>
+        </DeleteCard>
             
         <ImagePopup card={selectedCard} isOpen={selectedCard.link} onClose={closeAllPopups} />
 
@@ -203,8 +232,5 @@ function App() {
 export default App;
 
 
-// закрытие попапов на эскейп
-// очищение полей формы при открытии
-// индикаторы загрузки запросов
 
 
